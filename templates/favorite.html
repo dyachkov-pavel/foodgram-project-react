@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Избранное{% endblock %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static './pages/index.css' %}">
+{% endblock %}
+{% block content %}
+<div class="main__header">
+    <h1 class="main__title">Избранное</h1>
+    {% include 'includes/tags.html' with all_tags=all_tags tag_list=tag_list %}
+</div>
+<div class="card-list">
+    {% for favourite in page %}
+    {% include "includes/recipe_card.html" with recipe=favourite.recipe %}
+    {% endfor %}
+</div>
+{% if page.has_other_pages %}
+{% include "includes/paginator.html" with items=page paginator=paginator%}
+{% endif %}
+{% endblock %}
+{% block js %}
+<script src="{% static './js/components/MainCards.js' %}"></script>
+
+<script src="{% static './js/components/Purchases.js' %}"></script>
+<script src="{% static './js/components/Favorites.js' %}"></script>
+
+<script src="{% static './js/config/config.js' %}"></script>
+<script src="{% static './js/components/CardList.js' %}"></script>
+<script src="{% static './js/components/Header.js' %}"></script>
+
+<script src="{% static './js/api/Api.js' %}"></script>
+<script src="{% static '/template_js/favorite.js' %}"></script>
+{% endblock %}

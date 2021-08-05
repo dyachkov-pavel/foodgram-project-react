@@ -1,0 +1,14 @@
+{% extends "base.html" %} 
+{% block title %} {{ title }} {% endblock %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static './pages/form.css' %}">
+{% endblock %}
+{% block content %}
+
+<div class="main__header">
+    <h1 class="main__title">{{ title }}</h1>
+</div>
+<p>{{ text }}</p>
+
+{% endblock %}
