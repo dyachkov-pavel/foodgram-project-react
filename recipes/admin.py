@@ -10,49 +10,49 @@ class RecipeIngredientInline(admin.TabularInline):
 
 
 class TagAdmin(admin.ModelAdmin):
-    list_display = ("name", "color", "slug")
+    list_display = ('name', 'color', 'slug')
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_filter = ("email", "username")
+    list_filter = ('email', 'username')
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ("author", "title", "description", "time",)
-    search_fields = ("author", "title", "tag")
-    list_filter = ("author", "tag", "title")
+    list_display = ('author', 'title', 'description', 'time',)
+    search_fields = ('author', 'title', 'tag')
+    list_filter = ('author', 'tag', 'title')
     inlines = [RecipeIngredientInline]
 
 
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ("title", "dimension",)
-    search_fields = ("title", "dimension",)
-    list_filter = ("dimension", "title",)
+    list_display = ('title', 'dimension',)
+    search_fields = ('title', 'dimension',)
+    list_filter = ('dimension', 'title',)
     inlines = [RecipeIngredientInline]
 
 
 class RecipeIngredientAdmin(admin.ModelAdmin):
-    list_display = ("recipe", "ingredient", "quantity",)
-    search_fields = ("recipe", "ingredient",)
-    list_filter = ("recipe", "ingredient",)
+    list_display = ('recipe', 'ingredient', 'quantity',)
+    search_fields = ('recipe', 'ingredient',)
+    list_filter = ('recipe', 'ingredient',)
 
 
 class FollowAdmin(admin.ModelAdmin):
-    list_display = ("user", "author")
-    search_fields = ("user", "author")
-    list_filter = ("user", "author")
+    list_display = ('user', 'author')
+    search_fields = ('user', 'author')
+    list_filter = ('user', 'author')
 
 
 class FavouriteAdmin(admin.ModelAdmin):
-    list_display = ("user", "recipe")
-    search_fields = ("user", "recipe")
-    list_filter = ("user", "recipe")
+    list_display = ('user', 'recipe')
+    search_fields = ('user', 'recipe')
+    list_filter = ('user', 'recipe')
 
 
 class PurchaseAdmin(admin.ModelAdmin):
-    list_display = ("user", "recipe")
-    search_fields = ("user", "recipe")
-    list_filter = ("user", "recipe")
+    list_display = ('user', 'recipe')
+    search_fields = ('user', 'recipe')
+    list_filter = ('user', 'recipe')
 
 
 admin.site.register(Purchase, PurchaseAdmin)

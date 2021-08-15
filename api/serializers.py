@@ -1,4 +1,3 @@
-from django.db.models.fields import CharField
 from recipes.models import Ingredient
 from rest_framework import serializers
 

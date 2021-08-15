@@ -1,6 +1,7 @@
 from django import template
 from django.contrib.auth import get_user_model
 from django.http import request
+from rest_framework.generics import get_object_or_404
 
 
 User = get_user_model()
@@ -29,23 +30,8 @@ def page_filter(request, chosen_page):
 
 
 @register.filter
-def substract(value, arg=3):
-    return value - arg
-
-
-@register.filter
-def three_recipes(value):
-    return value[:3]
-
-
-@register.filter
 def get_favourite(recipe, user):
     return user.recipe_follower.filter(recipe=recipe).exists()
-
-
-@register.filter
-def purchase_counter(user):
-    return user.user_purchase.count()
 
 
 @register.filter
@@ -57,7 +43,19 @@ def get_purchase(recipe, user):
 def get_follow(author, user):
     return user.follower.filter(author=author).exists()
 
+
 @register.filter
 def get_author_id(username):
-    user = User.objects.get(username=username)
+    user = get_object_or_404(User, username=username)
     return user.id
+
+
+@register.filter
+def get_suffix(value):
+    value -= 3
+    if value == 1 or (value > 20 and value % 10 == 1):
+        return 'рецепт'
+    elif 2 <= value <= 4 or (value > 20 and value % 10 in [2, 3, 4]):
+        return 'рецепта'
+    else:
+        return 'рецептов'

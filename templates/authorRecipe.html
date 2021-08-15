@@ -6,31 +6,26 @@
 <link rel="stylesheet" href="{% static './pages/index.css' %}">
 {% endblock %}
 {% block content %}
-<div class="main__header">
-    <h1 class="main__title">{{ author.full_name }}</h1>
-    {% include 'includes/tags.html' with all_tags=all_tags tag_list=tag_list %}
-</div>
-{% csrf_token %}
-{% if user.is_authenticated and author != user  %}
-{% if author|get_follow:user %}
-<div class="author-subscribe" data-author="{{ author.id }}">
-    <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe">Отписаться от автора</button></p>
-</div>
-{% else %}
-<div class="author-subscribe" data-author="{{ author.id }}">
-    <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe"
-            data-out>Подписаться на автора</button></p>
-</div>
-{% endif %}
-{% endif %}
-<div class="card-list">
-    {% for recipe in page %}
-    {% include "includes/recipe_card.html" with recipe=recipe %}
-    {% endfor %}
-</div>
-{% if page.has_other_pages %}
-    {% include "includes/paginator.html" with items=page paginator=paginator%}
-{% endif %}
+    <div class="main__header">
+        <h1 class="main__title">{{ author.get_full_name }}</h1>
+        {% include 'includes/tags.html' with tags=tags %}
+    </div>
+    {% csrf_token %}
+    {% if user.is_authenticated and author != user %}
+        <div class="author-subscribe" data-author="{{ author.id }}">
+            <p style="padding: 0 0 2em 0;">
+                {% include 'buttons/subscribe.html' %}
+            </p>
+        </div>
+    {% endif %}
+    <div class="card-list">
+        {% for recipe in page %}
+            {% include "includes/recipe_card.html" with recipe=recipe %}
+        {% endfor %}
+    </div>
+    {% if page.has_other_pages %}
+        {% include "includes/paginator.html" with items=page paginator=paginator%}
+    {% endif %}
 {% endblock %}
 
 {% block js %}

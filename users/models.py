@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
 class CustomAccountManager(BaseUserManager):
@@ -21,19 +21,13 @@ class CustomAccountManager(BaseUserManager):
         return self.create_user(email, username, first_name, password, **other_fields)
 
 
-class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(max_length=256, unique=True, verbose_name='Email')
-    username = models.CharField(max_length=256, unique=True, verbose_name='Имя пользователя')
-    full_name = models.CharField(max_length=256, null=True, blank=True, verbose_name='Имя Фамилия')
-    is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    last_login = models.DateTimeField(null=True, blank=True)
-    date_joined = models.DateTimeField(auto_now_add=True)
+class User(AbstractUser):
+
+    email = models.EmailField(('Email'), unique=True)
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name']
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
     objects = CustomAccountManager()
 
