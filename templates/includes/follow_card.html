@@ -1,11 +1,11 @@
 {% load tag_filter %}
-<div class="card-user" data-author="{{ author|get_author_id }}">
+<div class="card-user" data-author="{{ follow.author.user.id }}">
     <div class="card-user__header">
-        <h2 class="card-user__title">{{ author.author.get_full_name }}</h2>
+        <h2 class="card-user__title">{{ follow.author.get_full_name }}</h2>
     </div>
     <div class="card-user__body">
         <ul class="card-user__items">
-            {% for recipe in author.author.user_recipes.all|slice:"3" %}
+            {% for recipe in follow.author.user_recipes.all|slice:"3" %}
             <li class="card-user__item">
                 <div class="recipe">
                     {% load thumbnail %}
@@ -17,10 +17,10 @@
                 </div>
             </li>
             {% endfor %}
-            {% with author.author.user_recipes.count as recipe_number %}
+            {% with follow.author.user_recipes.count as recipe_number %}
             {% if recipe_number > 3 %}
             <li class="card-user__item">
-                <a href="{% url 'profile' username=author %}" class="card-user__link link">
+                <a href="{% url 'profile' username=follow %}" class="card-user__link link">
                     Еще {{ recipe_number|add:"-3" }} {{ recipe_number|get_suffix }}...</a>
             </li>
             {% endif %}

@@ -1,9 +1,8 @@
-from django.contrib import admin
-from django.db import models
-from .models import User
 from django.contrib.auth.admin import UserAdmin
-from django.forms import Textarea, TextInput
+from django.contrib.auth import get_user_model
+from django.contrib import admin
 
+User = get_user_model()
 
 class UserAdminConfig(UserAdmin):
     ordering = ('-date_joined',)
@@ -27,5 +26,5 @@ class UserAdminConfig(UserAdmin):
         }),
     )
 
-
+admin.site.unregister(User)
 admin.site.register(User, UserAdminConfig)

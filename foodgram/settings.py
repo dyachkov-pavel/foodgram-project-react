@@ -112,9 +112,9 @@ LOGIN_URL = '/auth/login/'
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
 
-AUTH_USER_MODEL = 'users.User'
 LANGUAGE_CODE = 'ru-RU'
 
+AUTHENTICATION_BACKENDS = ['users.backends.EmailBackend']
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

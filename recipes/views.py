@@ -1,12 +1,13 @@
+from django.db.models.aggregates import Avg, Sum
 from recipes.forms import RecipeForm
 from django.http import request
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Favourite, Ingredient, Purchase, Recipe, Tag, Follow
+from .models import Favourite, Ingredient, Purchase, Recipe, RecipeIngredient, Tag, Follow
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
-from django.db.models import F
+from django.db.models import F, Count
 
 User = get_user_model()
 
@@ -14,15 +15,15 @@ User = get_user_model()
 def index(request):
     tags = {}
     tag_list = request.GET.getlist('tags')
-    if len(tag_list) == 0:
+    if not tag_list:
         recipes = Recipe.objects.all()
     else:
         recipes = Recipe.objects.filter(tag__slug__in=tag_list).distinct()
     for tag in Tag.objects.all():
-        tags[tag] = 'off'
-    for tag in tags:
         if tag.slug in tag_list:
-            tags[tag] = 'on'
+            tags[tag.slug] = [True, tag]
+        else:
+            tags[tag.slug] = [False, tag]
     paginator = Paginator(recipes, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -65,16 +66,16 @@ def profile(request, username):
     tags = {}
     author = get_object_or_404(User, username=username)
     tag_list = request.GET.getlist('tags')
-    if len(tag_list) == 0:
+    if not tag_list:
         recipe_list = author.user_recipes.all()
     else:
         recipe_list = author.user_recipes.filter(
             tag__slug__in=tag_list).distinct()
     for tag in Tag.objects.all():
-        tags[tag] = 'off'
-    for tag in tags:
         if tag.slug in tag_list:
-            tags[tag] = 'on'
+            tags[tag.slug] = [True, tag]
+        else:
+            tags[tag.slug] = [False, tag]
     paginator = Paginator(recipe_list, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -136,16 +137,16 @@ def delete_recipe(request, username, recipe_id):
 def favourite(request):
     tags = {}
     tag_list = request.GET.getlist('tags')
-    if len(tag_list) == 0:
+    if not tag_list:
         favourite_list = request.user.recipe_follower.all()
     else:
         favourite_list = request.user.recipe_follower.filter(
             recipe__tag__slug__in=tag_list).distinct()
     for tag in Tag.objects.all():
-        tags[tag] = 'off'
-    for tag in tags:
         if tag.slug in tag_list:
-            tags[tag] = 'on'
+            tags[tag.slug] = [True, tag]
+        else:
+            tags[tag.slug] = [False, tag]
     paginator = Paginator(favourite_list, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -176,23 +177,19 @@ def download_txt(request):
     response = HttpResponse(content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename="shoplist.txt"'
     lines = ['Продуктовый помощник\n\n']
-    shoplist = {}
-    purchases = request.user.user_purchase.values('recipe').annotate(
-        dimension=F('recipe__ingredient__dimension'),
-        title=F('recipe__ingredient__title'),
-        quantity=F('recipe__ingredient__ingredient__quantity')
+    purchases = RecipeIngredient.objects.filter(
+        recipe__in=request.user.user_purchase.values('recipe')).values(
+        'ingredient__title', 'ingredient__dimension').annotate(
+        quantity=Sum('quantity')
     )
     for purchase in purchases:
-        ingredient_name = purchase['title']
+        ingredient_name = purchase['ingredient__title']
         ingredient_quantity = purchase['quantity']
-        ingredient_dimension = purchase['dimension']
-        if ingredient_name not in shoplist:
-            shoplist[ingredient_name] = [
-                ingredient_quantity, ingredient_dimension]
-        else:
-            shoplist[ingredient_name][0] += ingredient_quantity
-    for key, value in shoplist.items():
-        lines.append(f'{key}: {value[0]} {value[1]}\n')
+        ingredient_dimension = purchase['ingredient__dimension']
+        lines.append(
+            f'{ingredient_name}: {ingredient_quantity} '
+            f'{ingredient_dimension}\n'
+        )
     response.writelines(lines)
     return response
 

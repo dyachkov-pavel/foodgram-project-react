@@ -1,8 +1,8 @@
 {% load tag_filter %}
 {% if recipe|get_purchase:user %}
-<button class="button button_style_light-blue-outline" name="purchases">
-    <span class="icon-check button__icon"></span> Рецепт добавлен</button>
+    <button class="button button_style_light-blue-outline" name="purchases">
+        <span class="icon-check button__icon"></span> Рецепт добавлен</button>
 {% else %}
-<button {% if single %}class="button button_style_blue"{% else %}class="button button_style_light-blue"{% endif %} name="purchases" data-out>
-    <span class="icon-plus {% if not single %}button__icon{% endif %}"></span>Добавить в покупки</button>
+    <button {% if single %}class="button button_style_blue"{% else %}class="button button_style_light-blue"{% endif %} name="purchases" data-out>
+        <span class="icon-plus {% if not single %}button__icon{% endif %}"></span>Добавить в покупки</button>
 {% endif %}

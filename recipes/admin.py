@@ -32,7 +32,9 @@ class IngredientAdmin(admin.ModelAdmin):
 
 
 class RecipeIngredientAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredient', 'quantity',)
+    list_display = ('id', 'recipe_id',
+                    'recipe', 'ingredient_id',
+                    'ingredient', 'quantity',)
     search_fields = ('recipe', 'ingredient',)
     list_filter = ('recipe', 'ingredient',)
 

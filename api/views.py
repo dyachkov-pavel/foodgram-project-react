@@ -22,8 +22,7 @@ def subscribe(request):
     to_follow = get_object_or_404(User, id=author_id)
     user = request.user
     if (to_follow == request.user or
-            Follow.objects.filter(user=user,
-                                  author=to_follow).exists()):
+        Follow.objects.filter(user=user, author=to_follow).exists()):
         return HTTP_400_RESPONSE
     Follow.objects.create(user=request.user, author=to_follow)
     return HTTP_201_RESPONSE
@@ -44,13 +43,11 @@ def unsubscribe(request, id):
 @api_view(['POST'])
 def add_favourite(request):
     recipe_id = request.data.get('id')
-    to_favourite = get_object_or_404(Recipe, id=recipe_id)
-    user = request.user
-    if (to_favourite == request.user or
-            Favourite.objects.filter(user=user,
-                                     recipe=to_favourite).exists()):
+    to_fav = get_object_or_404(Recipe, id=recipe_id)
+    if (to_fav == request.user or
+        Favourite.objects.filter(user=request.user, recipe=to_fav).exists()):
         return HTTP_400_RESPONSE
-    Favourite.objects.create(user=user, recipe=to_favourite)
+    Favourite.objects.create(user=request.user, recipe=to_fav)
     return HTTP_201_RESPONSE
 
 
@@ -69,20 +66,19 @@ def remove_favourite(request, id):
 @api_view(['POST'])
 def add_purchase(request):
     recipe_id = request.data.get('id')
-    to_purchase = get_object_or_404(Recipe, id=recipe_id)
-    if (to_purchase == request.user or
-            Purchase.objects.filter(user=request.user,
-                                    recipe=to_purchase).exists()):
+    to_buy = get_object_or_404(Recipe, id=recipe_id)
+    if (to_buy == request.user or
+        Purchase.objects.filter(user=request.user, recipe=to_buy).exists()):
         return HTTP_400_RESPONSE
-    Purchase.objects.create(user=request.user, recipe=to_purchase)
+    Purchase.objects.create(user=request.user, recipe=to_buy)
     return HTTP_201_RESPONSE
 
 
 @api_view(['DELETE'])
 def remove_purchase(request, id):
     main_user = request.user
-    to_purchase = get_object_or_404(Recipe, id=id)
-    following = Purchase.objects.filter(user=main_user, recipe=to_purchase)
+    to_buy = get_object_or_404(Recipe, id=id)
+    following = Purchase.objects.filter(user=main_user, recipe=to_buy)
     if following.exists():
         following.delete()
         return HTTP_200_RESPONSE

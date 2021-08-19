@@ -42,33 +42,33 @@ class RecipeForm(forms.ModelForm):
                   'description': 'Описание',
                   'image': 'Загрузить фото', }
 
-    def save(self, commit=True):
+    def save(self):
         self.instance = super().save(commit=False)
-        if commit:
-            self.instance.save()
-            self.save_m2m()
-            ingredients = []
-            quantity = []
-            for string in self.request.POST:
-                if 'nameIngredient_' in string:
-                    ingredients.append(self.request.POST.get(string))
-                if 'valueIngredient_' in string:
-                    quantity.append(self.request.POST.get(string))
-            ingredients_len = len(ingredients)
-            quantity_len = len(quantity)
-            if ingredients_len == quantity_len and ingredients_len != 0:
-                for ingredient in enumerate(ingredients):
-                    used_ingredient = get_object_or_404(
-                        Ingredient,
-                        title=ingredient[1]
-                    )
-                    RecipeIngredient.objects.create(
-                        recipe=self.instance,
-                        ingredient=used_ingredient,
-                        quantity=quantity[ingredient[0]]
-                    )
-            else:
-                raise IngredientsError(
-                    'No ingredietns were provided or ingredients and its quantity do not match'
-                )
+        self.instance.save()
+        self.save_m2m()
+        ingredients = []
+        quantity = []
+        for string in self.request.POST:
+            if 'nameIngredient_' in string:
+                ingredients.append(self.request.POST.get(string))
+            if 'valueIngredient_' in string:
+                quantity.append(self.request.POST.get(string))
+        ingredients_len = len(ingredients)
+        quantity_len = len(quantity)
+        if ingredients_len != quantity_len or not ingredients:
+            raise IngredientsError(
+                'No ingredietns were provided or '
+                'ingredients and its quantity do not match'
+            )
+
+        for index, ingredient in enumerate(ingredients):
+            used_ingredient = get_object_or_404(
+                Ingredient,
+                title=ingredient
+            )
+            RecipeIngredient.objects.create(
+                recipe=self.instance,
+                ingredient=used_ingredient,
+                quantity=quantity[index]
+            )
         return self.instance

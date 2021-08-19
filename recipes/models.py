@@ -98,11 +98,11 @@ class RecipeIngredient(models.Model):
 class Follow(models.Model):
     user = models.ForeignKey(User,
                              on_delete=models.CASCADE,
-                             related_name="follower",
+                             related_name='follower',
                              verbose_name='пользователь')
     author = models.ForeignKey(User,
                                on_delete=models.CASCADE,
-                               related_name="following",
+                               related_name='following',
                                verbose_name='автор')
 
     def __str__(self):
@@ -123,11 +123,11 @@ class Follow(models.Model):
 class Favourite(models.Model):
     user = models.ForeignKey(User,
                              on_delete=models.CASCADE,
-                             related_name="recipe_follower",
+                             related_name='recipe_follower',
                              verbose_name='пользователь')
     recipe = models.ForeignKey(Recipe,
                                on_delete=models.CASCADE,
-                               related_name="fav_recipe",
+                               related_name='fav_recipe',
                                verbose_name='рецепт')
 
     def __str__(self):
@@ -142,17 +142,17 @@ class Favourite(models.Model):
         ]
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
-        ordering = ["-recipe__pub_date"]
+        ordering = ['-recipe__pub_date']
 
 
 class Purchase(models.Model):
     user = models.ForeignKey(User,
                              on_delete=models.CASCADE,
-                             related_name="user_purchase",
+                             related_name='user_purchase',
                              verbose_name='пользователь')
     recipe = models.ForeignKey(Recipe,
                                on_delete=models.CASCADE,
-                               related_name="recipe_purchase",
+                               related_name='recipe_purchase',
                                verbose_name='рецепт')
 
     def __str__(self):

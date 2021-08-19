@@ -45,12 +45,6 @@ def get_follow(author, user):
 
 
 @register.filter
-def get_author_id(username):
-    user = get_object_or_404(User, username=username)
-    return user.id
-
-
-@register.filter
 def get_suffix(value):
     value -= 3
     if value == 1 or (value > 20 and value % 10 == 1):
