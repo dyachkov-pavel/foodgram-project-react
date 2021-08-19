@@ -1,13 +1,13 @@
-from django.db.models.aggregates import Avg, Sum
+from django.db.models.aggregates import Sum
 from recipes.forms import RecipeForm
 from django.http import request
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Favourite, Ingredient, Purchase, Recipe, RecipeIngredient, Tag, Follow
+from .models import Recipe, RecipeIngredient, Tag
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
-from django.db.models import F, Count
+
 
 User = get_user_model()
 
