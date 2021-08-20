@@ -13,17 +13,9 @@ User = get_user_model()
 
 
 def index(request):
-    tags = {}
     tag_list = request.GET.getlist('tags')
-    if not tag_list:
-        recipes = Recipe.objects.all()
-    else:
-        recipes = Recipe.objects.filter(tag__slug__in=tag_list).distinct()
-    for tag in Tag.objects.all():
-        if tag.slug in tag_list:
-            tags[tag.slug] = [True, tag]
-        else:
-            tags[tag.slug] = [False, tag]
+    recipes = filter_list(tag_list, Recipe.objects.all())
+    tags = active_tags(tag_list)
     paginator = Paginator(recipes, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -63,19 +55,10 @@ def follow_index(request):
 
 
 def profile(request, username):
-    tags = {}
     author = get_object_or_404(User, username=username)
     tag_list = request.GET.getlist('tags')
-    if not tag_list:
-        recipe_list = author.user_recipes.all()
-    else:
-        recipe_list = author.user_recipes.filter(
-            tag__slug__in=tag_list).distinct()
-    for tag in Tag.objects.all():
-        if tag.slug in tag_list:
-            tags[tag.slug] = [True, tag]
-        else:
-            tags[tag.slug] = [False, tag]
+    recipe_list = filter_list(tag_list, author.user_recipes.all())
+    tags = active_tags(tag_list)
     paginator = Paginator(recipe_list, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -134,19 +117,13 @@ def delete_recipe(request, username, recipe_id):
     return redirect('index')
 
 
+@login_required
 def favourite(request):
-    tags = {}
     tag_list = request.GET.getlist('tags')
-    if not tag_list:
-        favourite_list = request.user.recipe_follower.all()
-    else:
-        favourite_list = request.user.recipe_follower.filter(
-            recipe__tag__slug__in=tag_list).distinct()
-    for tag in Tag.objects.all():
-        if tag.slug in tag_list:
-            tags[tag.slug] = [True, tag]
-        else:
-            tags[tag.slug] = [False, tag]
+    favourite_list = filter_list(tag_list,
+                                 request.user.recipe_follower.all(),
+                                 'favourite')
+    tags = active_tags(tag_list)
     paginator = Paginator(favourite_list, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -159,11 +136,13 @@ def favourite(request):
     )
 
 
+@login_required
 def purchases(request):
     purchases = request.user.user_purchase.all()
     return render(request, 'shopList.html', {'purchases': purchases})
 
 
+@login_required
 def purchase_delete(request, id):
     recipe = get_object_or_404(Recipe, id=id)
     purchase = recipe.recipe_purchase.filter(recipe=recipe,
@@ -173,6 +152,7 @@ def purchase_delete(request, id):
     return redirect('purchases')
 
 
+@login_required
 def download_txt(request):
     response = HttpResponse(content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename="shoplist.txt"'
@@ -205,3 +185,20 @@ def page_not_found(request, exception):
 
 def server_error(request):
     return render(request, 'misc/500.html', status=500)
+
+
+def active_tags(tag_list):
+    tags = {}
+    for tag in Tag.objects.all():
+        tags[tag.slug] = tag
+        if tag.slug in tag_list:
+            tag.active = True
+    return tags
+
+
+def filter_list(tag_list, objects, model='recipe'):
+    if not tag_list:
+        return objects
+    if model == 'recipe':
+        return objects.filter(tag__slug__in=tag_list).distinct()
+    return objects.filter(recipe__tag__slug__in=tag_list).distinct()

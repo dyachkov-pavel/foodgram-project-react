@@ -3,9 +3,9 @@
     {% for slug, tag in tags.items %}
     <li class="tags__item">
         <a id="{{ slug }}"
-            class="tags__checkbox tags__checkbox_style_{{ tag.1.color }} {% if tag.0 == True %}tags__checkbox_active{% endif %}"
-            href="?{{ request|tag_filter:tag.1 }}"></a>
-        <span class="tags__label">{{ tag.1.name }}</span>
+            class="tags__checkbox tags__checkbox_style_{{ tag.color }} {% if tag.active %}tags__checkbox_active{% endif %}"
+            href="?{{ request|tag_filter:tag }}"></a>
+        <span class="tags__label">{{ tag.name }}</span>
     </li>
     {% endfor %}
 </ul>

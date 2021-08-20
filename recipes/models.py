@@ -12,12 +12,12 @@ class Tag(models.Model):
         max_length=15, verbose_name='цвет')
     slug = models.SlugField(unique=True, verbose_name='ссылка')
 
-    def __str__(self):
-        return self.slug
-
     class Meta:
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
+
+    def __str__(self):
+        return self.slug
 
 
 class Ingredient(models.Model):
@@ -25,12 +25,12 @@ class Ingredient(models.Model):
     dimension = models.CharField(max_length=15,
                                  verbose_name='единица измерения')
 
-    def __str__(self):
-        return self.title
-
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
+
+    def __str__(self):
+        return self.title
 
 
 class Recipe(models.Model):
@@ -60,13 +60,13 @@ class Recipe(models.Model):
     )
     pub_date = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.title
-
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
         ordering = ['-pub_date']
+
+    def __str__(self):
+        return self.title
 
 
 class RecipeIngredient(models.Model):
@@ -105,9 +105,6 @@ class Follow(models.Model):
                                related_name='following',
                                verbose_name='автор')
 
-    def __str__(self):
-        return self.author.username
-
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -118,6 +115,9 @@ class Follow(models.Model):
         verbose_name = 'Подписка на автора'
         verbose_name_plural = 'Подписки на авторов'
         ordering = ['author']
+
+    def __str__(self):
+        return self.author.username
 
 
 class Favourite(models.Model):
@@ -130,9 +130,6 @@ class Favourite(models.Model):
                                related_name='fav_recipe',
                                verbose_name='рецепт')
 
-    def __str__(self):
-        return self.recipe.title
-
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -143,6 +140,9 @@ class Favourite(models.Model):
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
         ordering = ['-recipe__pub_date']
+
+    def __str__(self):
+        return self.recipe.title
 
 
 class Purchase(models.Model):
@@ -155,9 +155,6 @@ class Purchase(models.Model):
                                related_name='recipe_purchase',
                                verbose_name='рецепт')
 
-    def __str__(self):
-        return self.recipe.title
-
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -168,3 +165,6 @@ class Purchase(models.Model):
 
         verbose_name = 'Покупка'
         verbose_name_plural = 'Список покупок'
+
+    def __str__(self):
+        return self.recipe.title

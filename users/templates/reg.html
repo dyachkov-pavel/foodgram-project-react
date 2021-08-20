@@ -9,10 +9,10 @@
     <div class="form-container">
         <form class="form" method="post" action="{% url 'register' %}">
             {% csrf_token %}
-            {% include 'includes/form.html' %}
-            <div class="form__footer">
-                <button class="button button_style_blue">Создать аккаунт</button>
-            </div>
+                {% include 'includes/form.html' %}
+                <div class="form__footer">
+                    <button class="button button_style_blue">Создать аккаунт</button>
+                </div>
         </form>
     </div>
 {% endblock %}

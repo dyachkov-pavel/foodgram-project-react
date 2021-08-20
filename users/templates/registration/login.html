@@ -5,23 +5,24 @@
 <link rel="stylesheet" href="{% static './pages/form.css' %}">{% endblock %}
 {% block content %}
 {% if next %}
-<p class="form__info-text">
-    Вы обратились к странице, доступ к которой возможен только для залогиненных пользователей.
-    Пожалуйста, авторизуйтесь.
-</p>
+    <p class="form__info-text">
+        Вы обратились к странице, доступ к которой возможен только для залогиненных пользователей.
+        Пожалуйста, авторизуйтесь.
+    </p>
 {% else %}
-<div class="main__header">
-    <h1 class="main__title">Войти на сайт</h1>
-</div>
+    <div class="main__header">
+        <h1 class="main__title">Войти на сайт</h1>
+    </div>
 {% endif %}
-<div class="form-container">
-    <form class="form" method="post" action="{% url 'login' %}">
-        {% csrf_token %}
-        {% include 'includes/form.html' with form=form %}
-        <div class="form__footer">
-            <button class="button button_style_blue">Войти</button>
-            <a href="{% url 'password_reset' %}" class="form__forgot-link">Забыли пароль?</a>
-        </div>
-    </form>
-</div>
+    <div class="form-container">
+        <form class="form" method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+                {% include 'includes/form.html' with form=form %}
+                <div class="form__footer">
+                    <button class="button button_style_blue">Войти</button>
+                    <a href="{% url 'password_reset' %}" class="form__forgot-link">Забыли пароль?</a>
+                </div>
+        </form>
+    </div>
 {% endblock %}
