@@ -111,7 +111,7 @@ def delete_recipe(request, username, recipe_id):
     recipe = get_object_or_404(Recipe,
                                author__username=username,
                                id=recipe_id)
-    if request.user != recipe.author:
+    if request.user != recipe.author and not request.user.is_staff:
         return redirect('recipe', username=username, recipe_id=recipe_id)
     recipe.delete()
     return redirect('index')
