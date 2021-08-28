@@ -6,7 +6,8 @@ from django import forms
 
 User = get_user_model()
 
-URLS = ['create-recipe', 'download_txt', 'favourite', 'follow', 'purchases']
+URLS = ['create-recipe', 'download_txt',
+        'favourite', 'follow', 'purchases', 'admin']
 
 
 class CreationForm(UserCreationForm):
