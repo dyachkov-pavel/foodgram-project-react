@@ -1,5 +1,5 @@
 {% load tag_filter %}
-<div class="card-user" data-author="{{ follow.author.user.id }}">
+<div class="card-user" data-author="{{ follow.author.id }}">
     <div class="card-user__header">
         <h2 class="card-user__title">{{ follow.author.get_full_name }}</h2>
     </div>

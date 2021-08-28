@@ -2,20 +2,20 @@ from django.db.models.aggregates import Sum
 from recipes.forms import RecipeForm
 from django.http import request
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Recipe, RecipeIngredient, Tag
+from .models import Favourite, Recipe, RecipeIngredient, Tag
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
-
+from .utils import filter_tags, filter_list_by_tags
 
 User = get_user_model()
 
 
 def index(request):
     tag_list = request.GET.getlist('tags')
-    recipes = filter_list(tag_list, Recipe.objects.all())
-    tags = active_tags(tag_list)
+    recipes = filter_list_by_tags(tag_list, Recipe.objects.all())
+    tags = filter_tags(tag_list)
     paginator = Paginator(recipes, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -57,8 +57,8 @@ def follow_index(request):
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     tag_list = request.GET.getlist('tags')
-    recipe_list = filter_list(tag_list, author.user_recipes.all())
-    tags = active_tags(tag_list)
+    recipe_list = filter_list_by_tags(tag_list, author.user_recipes.all())
+    tags = filter_tags(tag_list)
     paginator = Paginator(recipe_list, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -120,10 +120,10 @@ def delete_recipe(request, username, recipe_id):
 @login_required
 def favourite(request):
     tag_list = request.GET.getlist('tags')
-    favourite_list = filter_list(tag_list,
-                                 request.user.recipe_follower.all(),
-                                 'favourite')
-    tags = active_tags(tag_list)
+    favourite_list = filter_list_by_tags(tag_list,
+                                         request.user.recipe_follower.all(),
+                                         Favourite)
+    tags = filter_tags(tag_list)
     paginator = Paginator(favourite_list, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -185,20 +185,3 @@ def page_not_found(request, exception):
 
 def server_error(request):
     return render(request, 'misc/500.html', status=500)
-
-
-def active_tags(tag_list):
-    tags = {}
-    for tag in Tag.objects.all():
-        tags[tag.slug] = tag
-        if tag.slug in tag_list:
-            tag.active = True
-    return tags
-
-
-def filter_list(tag_list, objects, model='recipe'):
-    if not tag_list:
-        return objects
-    if model == 'recipe':
-        return objects.filter(tag__slug__in=tag_list).distinct()
-    return objects.filter(recipe__tag__slug__in=tag_list).distinct()
