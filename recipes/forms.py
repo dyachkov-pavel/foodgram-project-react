@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from .models import Recipe, Tag, RecipeIngredient, Ingredient
 from django.shortcuts import get_object_or_404
 
@@ -42,33 +43,61 @@ class RecipeForm(forms.ModelForm):
                   'description': 'Описание',
                   'image': 'Загрузить фото', }
 
-    def save(self):
-        self.instance = super().save(commit=False)
-        self.instance.save()
-        self.save_m2m()
+    def get_ingredients(self):
         ingredients = []
-        quantity = []
         for string in self.request.POST:
             if 'nameIngredient_' in string:
                 ingredients.append(self.request.POST.get(string))
+        return ingredients
+
+    def get_quantity(self):
+        quantity = []
+        for string in self.request.POST:
             if 'valueIngredient_' in string:
                 quantity.append(self.request.POST.get(string))
+        return quantity
+
+    def clean(self):
+        cleaned_data = super().clean()
+        ingredients = self.get_ingredients()
+        quantity = self.get_quantity()
         ingredients_len = len(ingredients)
         quantity_len = len(quantity)
         if ingredients_len != quantity_len or not ingredients:
-            raise IngredientsError(
-                'No ingredietns were provided or '
-                'ingredients and its quantity do not match'
+            self.add_error(
+                'ingredient',
+                'Не забудьте добавить ингредиенты'
+            )
+        if '0' in quantity:
+            self.add_error(
+                'ingredient',
+                'Проверьте, чтобы количество каждого '
+                'ингредиента было больше нуля'
             )
 
+    def save(self):
+        ingredients = self.get_ingredients()
+        quantity = self.get_quantity()
+        self.instance = super().save(commit=False)
+        self.instance.save()
+        self.save_m2m()
         for index, ingredient in enumerate(ingredients):
             used_ingredient = get_object_or_404(
                 Ingredient,
                 title=ingredient
             )
-            RecipeIngredient.objects.create(
+            ing_in_recipe = RecipeIngredient.objects.filter(
                 recipe=self.instance,
                 ingredient=used_ingredient,
-                quantity=quantity[index]
             )
+            if ing_in_recipe.exists():
+                ingredient_in_recipe = ing_in_recipe[0]
+                ingredient_in_recipe.quantity += int(quantity[index])
+                ingredient_in_recipe.save()
+            else:
+                RecipeIngredient.objects.create(
+                    recipe=self.instance,
+                    ingredient=used_ingredient,
+                    quantity=quantity[index]
+                )
         return self.instance

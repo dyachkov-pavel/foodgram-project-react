@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models import constraints
+from .validators import validate_more_than_zero, validate_time
 
 User = get_user_model()
 
@@ -56,7 +57,8 @@ class Recipe(models.Model):
     )
     time = models.PositiveIntegerField(
         help_text='время в минутах',
-        verbose_name='время приготовления'
+        verbose_name='время приготовления',
+        validators=[validate_time]
     )
     pub_date = models.DateTimeField(auto_now_add=True)
 
@@ -82,7 +84,10 @@ class RecipeIngredient(models.Model):
         related_name='ingredient',
         verbose_name='ингредиент'
     )
-    quantity = models.PositiveIntegerField(verbose_name='количество')
+    quantity = models.PositiveIntegerField(
+        verbose_name='количество',
+        validators=[validate_more_than_zero]
+    )
 
     class Meta:
         constraints = [

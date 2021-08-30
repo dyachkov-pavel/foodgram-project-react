@@ -90,7 +90,7 @@
             <div class="form__group">
                 <span for="{{ form.image.id_for_label }}" class="form__label">Загрузить фото</span>
                 <div class="form__field-group">
-                    <input type="file" name="image" id="{{ form.image.id_for_label }}">
+                    <input type="file" name="image" id="{{ form.image.id_for_label }}" value="{{ form.image.value }}">
                     {{ form.image.value|default_if_none:'' }}
                     <span class="form__error">{{ form.image.errors|escape }}</span>
                 </div>
