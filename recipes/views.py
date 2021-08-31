@@ -14,7 +14,9 @@ User = get_user_model()
 
 def index(request):
     tag_list = request.GET.getlist('tags')
-    recipes = filter_list_by_tags(tag_list, Recipe.objects.all())
+    recipes = filter_list_by_tags(tag_list,
+                                  Recipe.objects.all(),
+                                  True)
     tags = filter_tags(tag_list)
     paginator = Paginator(recipes, 6)
     page_number = request.GET.get('page')
@@ -57,7 +59,9 @@ def follow_index(request):
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     tag_list = request.GET.getlist('tags')
-    recipe_list = filter_list_by_tags(tag_list, author.user_recipes.all())
+    recipe_list = filter_list_by_tags(tag_list,
+                                      author.user_recipes.all(),
+                                      True)
     tags = filter_tags(tag_list)
     paginator = Paginator(recipe_list, 6)
     page_number = request.GET.get('page')
@@ -121,8 +125,7 @@ def delete_recipe(request, username, recipe_id):
 def favourite(request):
     tag_list = request.GET.getlist('tags')
     favourite_list = filter_list_by_tags(tag_list,
-                                         request.user.recipe_follower.all(),
-                                         Favourite)
+                                         request.user.recipe_follower.all())
     tags = filter_tags(tag_list)
     paginator = Paginator(favourite_list, 6)
     page_number = request.GET.get('page')

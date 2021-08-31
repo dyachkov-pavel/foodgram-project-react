@@ -10,9 +10,9 @@ def filter_tags(tag_list):
     return tags
 
 
-def filter_list_by_tags(tag_list, objects, model=Recipe):
+def filter_list_by_tags(tag_list, objects, recipe_model=None):
     if not tag_list:
         return objects
-    if model.__name__ == 'Recipe':
+    if recipe_model:
         return objects.filter(tag__slug__in=tag_list).distinct()
     return objects.filter(recipe__tag__slug__in=tag_list).distinct()
