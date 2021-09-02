@@ -11,12 +11,14 @@ from .utils import filter_tags, filter_list_by_tags
 
 User = get_user_model()
 
+RECIPE_MODEL = True
+
 
 def index(request):
     tag_list = request.GET.getlist('tags')
     recipes = filter_list_by_tags(tag_list,
                                   Recipe.objects.all(),
-                                  True)
+                                  RECIPE_MODEL)
     tags = filter_tags(tag_list)
     paginator = Paginator(recipes, 6)
     page_number = request.GET.get('page')
@@ -61,7 +63,7 @@ def profile(request, username):
     tag_list = request.GET.getlist('tags')
     recipe_list = filter_list_by_tags(tag_list,
                                       author.user_recipes.all(),
-                                      True)
+                                      RECIPE_MODEL)
     tags = filter_tags(tag_list)
     paginator = Paginator(recipe_list, 6)
     page_number = request.GET.get('page')
@@ -94,7 +96,7 @@ def edit_recipe(request, username, recipe_id):
                                author__username=username,
                                id=recipe_id)
     if request.user != recipe.author and not request.user.is_staff:
-        return redirect('recipe', usermame=username, recipe_id=recipe_id)
+        return redirect('recipe', username=username, recipe_id=recipe_id)
     form = RecipeForm(request.POST or None,
                       files=request.FILES or None,
                       instance=recipe,

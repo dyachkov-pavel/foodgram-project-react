@@ -7,10 +7,8 @@ User = get_user_model()
 
 
 class Tag(models.Model):
-    name = models.CharField(
-        max_length=10, verbose_name='название')
-    color = models.CharField(
-        max_length=15, verbose_name='цвет')
+    name = models.CharField(max_length=30, verbose_name='название')
+    color = models.CharField(max_length=15, verbose_name='цвет')
     slug = models.SlugField(unique=True, verbose_name='ссылка')
 
     class Meta:
@@ -22,13 +20,19 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    title = models.CharField(max_length=50, verbose_name='название')
+    title = models.CharField(max_length=256, verbose_name='название')
     dimension = models.CharField(max_length=15,
                                  verbose_name='единица измерения')
 
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['title', 'dimension'],
+                name='unique_ingredient_name'
+            )
+        ]
 
     def __str__(self):
         return self.title
